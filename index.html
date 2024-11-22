@@ -90,7 +90,7 @@
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
 
-            const response = await fetch('http://my-flask-env.us-east-1.elasticbeanstalk.com/predict', {
+            const response = await fetch('18.208.171.240:8080/predict', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
