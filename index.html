@@ -43,14 +43,28 @@
         document.getElementById("loanForm").addEventListener("submit", function(event) {
             event.preventDefault();
 
+            // Create FormData object from the form
             let formData = new FormData(document.getElementById("loanForm"));
+
+            // Check if there is file data or form data
+            if (!formData.get("file") && !formData.get("Gender") && !formData.get("Married") && !formData.get("LoanAmount") && !formData.get("ApplicantIncome")) {
+                document.getElementById("result").innerText = "Please provide either form data or upload a file.";
+                return;
+            }
+
+            // Send the form data to the backend
             fetch('http://127.0.0.1:5000/predict', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById("result").innerText = data.prediction || data.error;
+                // Display the prediction result or any error message
+                if (data.prediction) {
+                    document.getElementById("result").innerText = "Prediction: " + data.prediction;
+                } else {
+                    document.getElementById("result").innerText = "Error: " + (data.error || "Unknown error.");
+                }
             })
             .catch(error => {
                 document.getElementById("result").innerText = "Error: " + error;
