@@ -11,23 +11,53 @@
     <!-- Form for Input Data -->
     <h2>Enter Loan Details</h2>
     <form id="loanForm" method="POST" enctype="multipart/form-data">
-        <label for="gender">Gender:</label>
-        <select id="gender" name="Gender" required>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
+        <label for="homeOwnership">Home Ownership:</label>
+        <select id="homeOwnership" name="person_home_ownership" required>
+            <option value="OWN">Own</option>
+            <option value="MORTGAGE">Mortgage</option>
+            <option value="RENT">Rent</option>
         </select><br><br>
 
-        <label for="married">Marital Status:</label>
-        <select id="married" name="Married" required>
-            <option value="Married">Yes</option>
-            <option value="Single">No</option>
+        <label for="loanIntent">Loan Intent:</label>
+        <select id="loanIntent" name="loan_intent" required>
+            <option value="PERSONAL">Personal</option>
+            <option value="BUSINESS">Business</option>
+            <option value="EDUCATION">Education</option>
         </select><br><br>
 
-        <label for="loanAmount">Loan Amount:</label>
-        <input type="number" id="loanAmount" name="LoanAmount" required><br><br>
+        <label for="loanGrade">Loan Grade:</label>
+        <select id="loanGrade" name="loan_grade" required>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+        </select><br><br>
+
+        <label for="creditHistory">Credit History (Default on File):</label>
+        <select id="creditHistory" name="cb_person_default_on_file" required>
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+        </select><br><br>
 
         <label for="income">Income:</label>
-        <input type="number" id="income" name="ApplicantIncome" required><br><br>
+        <input type="number" id="income" name="person_income" required><br><br>
+
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="person_age" required><br><br>
+
+        <label for="empLength">Employment Length:</label>
+        <input type="number" id="empLength" name="person_emp_length" required><br><br>
+
+        <label for="loanAmount">Loan Amount:</label>
+        <input type="number" id="loanAmount" name="loan_amnt" required><br><br>
+
+        <label for="loanRate">Loan Interest Rate:</label>
+        <input type="number" step="0.01" id="loanRate" name="loan_int_rate" required><br><br>
+
+        <label for="creditHistLength">Credit History Length:</label>
+        <input type="number" id="creditHistLength" name="cb_person_cred_hist_length" required><br><br>
+
+        <label for="loanPercentIncome">Loan Percent Income:</label>
+        <input type="number" step="0.01" id="loanPercentIncome" name="loan_percent_income" required><br><br>
 
         <h2>Or Upload a File</h2>
         <label for="file">Choose a file (PDF, DOCX, or Image):</label>
@@ -43,23 +73,20 @@
         document.getElementById("loanForm").addEventListener("submit", function(event) {
             event.preventDefault();
 
-            // Create FormData object from the form
             let formData = new FormData(document.getElementById("loanForm"));
 
             // Check if there is file data or form data
-            if (!formData.get("file") && !formData.get("Gender") && !formData.get("Married") && !formData.get("LoanAmount") && !formData.get("ApplicantIncome")) {
+            if (!formData.get("file") && !formData.get("person_home_ownership") && !formData.get("loan_intent") && !formData.get("loan_grade") && !formData.get("cb_person_default_on_file") && !formData.get("person_income") && !formData.get("person_age") && !formData.get("person_emp_length") && !formData.get("loan_amnt") && !formData.get("loan_int_rate") && !formData.get("cb_person_cred_hist_length") && !formData.get("loan_percent_income")) {
                 document.getElementById("result").innerText = "Please provide either form data or upload a file.";
                 return;
             }
 
-            // Send the form data to the backend
             fetch('http://127.0.0.1:5000/predict', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
-                // Display the prediction result or any error message
                 if (data.prediction) {
                     document.getElementById("result").innerText = "Prediction: " + data.prediction;
                 } else {
