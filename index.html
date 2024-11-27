@@ -70,33 +70,61 @@
     <div id="result"></div>
 
     <script>
-        document.getElementById("loanForm").addEventListener("submit", function(event) {
-            event.preventDefault();
+    document.getElementById("loanForm").addEventListener("submit", function(event) {
+        event.preventDefault();
 
-            let formData = new FormData(document.getElementById("loanForm"));
+        let formData = new FormData(document.getElementById("loanForm"));
 
-            // Check if there is file data or form data
-            if (!formData.get("file") && !formData.get("person_home_ownership") && !formData.get("loan_intent") && !formData.get("loan_grade") && !formData.get("cb_person_default_on_file") && !formData.get("person_income") && !formData.get("person_age") && !formData.get("person_emp_length") && !formData.get("loan_amnt") && !formData.get("loan_int_rate") && !formData.get("cb_person_cred_hist_length") && !formData.get("loan_percent_income")) {
-                document.getElementById("result").innerText = "Please provide either form data or upload a file.";
-                return;
-            }
+        // Check if there is file data or form data
+        if (!formData.get("file") && 
+            !formData.get("person_home_ownership") && 
+            !formData.get("loan_intent") && 
+            !formData.get("loan_grade") && 
+            !formData.get("cb_person_default_on_file") && 
+            !formData.get("person_income") && 
+            !formData.get("person_age") && 
+            !formData.get("person_emp_length") && 
+            !formData.get("loan_amnt") && 
+            !formData.get("loan_int_rate") && 
+            !formData.get("cb_person_cred_hist_length") && 
+            !formData.get("loan_percent_income")) {
+            document.getElementById("result").innerText = "Please provide either form data or upload a file.";
+            return;
+        }
 
-            fetch('http://127.0.0.1:5000/predict', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.prediction) {
-                    document.getElementById("result").innerText = "Prediction: " + data.prediction;
-                } else {
-                    document.getElementById("result").innerText = "Error: " + (data.error || "Unknown error.");
+        fetch('http://127.0.0.1:5000/predict', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.prediction) {
+                let resultDiv = document.getElementById("result");
+
+                // Display prediction result
+                resultDiv.innerHTML = `<strong>Prediction:</strong> ${data.prediction}`;
+
+                // Display biases if available
+                if (data.biases) {
+                    let biasesHtml = `<h3>Potential Biases:</h3><ul>`;
+                    for (const [biasKey, biasValue] of Object.entries(data.biases)) {
+                        if (Array.isArray(biasValue)) {
+                            biasesHtml += biasValue.map(bias => `<li>${bias}</li>`).join('');
+                        } else {
+                            biasesHtml += `<li>${biasValue}</li>`;
+                        }
+                    }
+                    biasesHtml += `</ul>`;
+                    resultDiv.innerHTML += biasesHtml;
                 }
-            })
-            .catch(error => {
-                document.getElementById("result").innerText = "Error: " + error;
-            });
+            } else {
+                document.getElementById("result").innerText = "Error: " + (data.error || "Unknown error.");
+            }
+        })
+        .catch(error => {
+            document.getElementById("result").innerText = "Error: " + error;
         });
-    </script>
+    });
+</script>
 </body>
 </html>
