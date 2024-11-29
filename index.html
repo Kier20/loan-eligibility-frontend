@@ -92,10 +92,11 @@
         return;
     }
 
-    fetch('http://loanbiasalgo.ddns.net/predict', {
+        fetch('https://loanbiasalgo.ddns.net/predict', {
         method: 'POST',
         body: formData
     })
+
     .then(response => response.json())
     .then(data => {
         let resultDiv = document.getElementById("result");
